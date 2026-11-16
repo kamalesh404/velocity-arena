@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velocity Arena — 3D Multiplayer Tactical FPS</title>
+  <meta name="description" content="Velocity Arena - Next-Generation 3D Tactical FPS featuring Precision Sniper Rifle, Dual-Mode Spectator Engine, and Procedural 3D Web Audio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Game 3D Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Precision Sniper Scope HUD Canvas -->
+  <canvas id="sniper-scope-canvas" class="hidden"></canvas>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-container">
+      <div class="game-brand">
+        <h1 class="brand-title">VELOCITY<span class="brand-accent">ARENA</span></h1>
+        <p class="brand-sub">TACTICAL MULTIPLAYER 3D FPS</p>
+      </div>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar" id="loader-bar"></div>
+      </div>
+      <p class="loader-status" id="loader-text">Synthesizing Procedural Audio & Loading Arena...</p>
+      <div class="loader-tip">
+        <span>PRO TIP:</span> Right-click with Apex Sniper to zoom 4x; tap Shift while scoped to toggle 8x extreme magnification!
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Menu Overlay -->
+  <div id="main-menu" class="hidden">
+    <div class="menu-backdrop"></div>
+    <div class="menu-content">
+      <header class="menu-header">
+        <div class="brand-badge">TACTICAL SYSTEM ONLINE</div>
+        <h1 class="menu-title">VELOCITY<span>ARENA</span></h1>
+        <p class="menu-tagline">3D High-Velocity Multiplayer Combat Engine</p>
+      </header>
+
+      <nav class="menu-nav">
+        <button class="action-card primary" id="btn-play">
+          <div class="btn-inner">
+            <span class="btn-badge">RANKED</span>
+            <span class="btn-text">DEPLOY TO ARENA</span>
+            <span class="btn-sub">Join live 60Hz server</span>
+          </div>
+          <div class="card-glow"></div>
+        </button>
+
+        <button class="action-card" id="btn-weapons">
+          <div class="btn-inner">
+            <span class="btn-badge">ARSENAL</span>
+            <span class="btn-text">WEAPON LOADOUT</span>
+            <span class="btn-sub">Configure AR, SMG, Shotgun, or Sniper</span>
+          </div>
+          <div class="card-glow"></div>
+        </button>
+
+        <button class="action-card" id="btn-settings">
+          <div class="btn-inner">
+            <span class="btn-badge">CONFIG</span>
+            <span class="btn-text">AUDIO & SETTINGS</span>
+            <span class="btn-sub">Procedural sound, sensitivity, graphics</span>
+          </div>
+          <div class="card-glow"></div>
+        </button>
+      </nav>
+
+      <footer class="menu-footer">
+        <div class="user-pill">
+          <div class="status-dot"></div>
+          <span id="player-name-display">Operative_01</span>
+        </div>
+        <div class="server-pill">
+          <span>🟢 60Hz Low-Latency Netcode</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Weapons Arsenal Modal -->
+  <div id="weapons-panel" class="hidden modal-overlay">
+    <div class="glass-modal">
+      <div class="modal-header">
+        <h2>ARSENAL LOADOUT SELECTOR</h2>
+        <button class="modal-close" id="close-weapons">✕</button>
+      </div>
+
+      <div class="arsenal-grid">
+        <!-- Sniper Rifle Card (New Feature!) -->
+        <div class="weapon-card featured" data-weapon="sniper">
+          <div class="featured-tag">NEW WEAPON CLASS</div>
+          <div class="weapon-icon">🎯</div>
+          <h3>APEX RAIL-SNIPER</h3>
+          <p class="weapon-desc">High-risk precision rail-rifle. 1-shot headshot lethality, glowing laser tracers & dual-stage 4x/8x optical scope.</p>
+          <div class="stat-group">
+            <div class="stat-line"><span>DAMAGE</span><strong>85 (170 Headshot)</strong></div>
+            <div class="stat-line"><span>FIRE RATE</span><strong>55 RPM (Bolt Action)</strong></div>
+            <div class="stat-line"><span>OPTICS</span><strong>Dual 4x / 8x Zoom</strong></div>
+          </div>
+          <button class="select-weapon-btn">EQUIP LOADOUT</button>
+        </div>
+
+        <!-- Assault Rifle Card -->
+        <div class="weapon-card" data-weapon="assault">
+          <div class="weapon-icon">⚡</div>
+          <h3>VANGUARD AR</h3>
+          <p class="weapon-desc">Balanced high-velocity automatic assault rifle. Consistent medium-range suppressive fire.</p>
+          <div class="stat-group">
+            <div class="stat-line"><span>DAMAGE</span><strong>24 (43 Headshot)</strong></div>
+            <div class="stat-line"><span>FIRE RATE</span><strong>650 RPM</strong></div>
+            <div class="stat-line"><span>OPTICS</span><strong>Holo Sight</strong></div>
+          </div>
+          <button class="select-weapon-btn">EQUIP LOADOUT</button>
+        </div>
+
+        <!-- SMG Card -->
+        <div class="weapon-card" data-weapon="smg">
+          <div class="weapon-icon">💨</div>
+          <h3>RIFT SMG</h3>
+          <p class="weapon-desc">Rapid-cycle submachine gun engineered for extreme mobility, close quarters & slide dashes.</p>
+          <div class="stat-group">
+            <div class="stat-line"><span>DAMAGE</span><strong>18 (29 Headshot)</strong></div>
+            <div class="stat-line"><span>FIRE RATE</span><strong>960 RPM</strong></div>
+            <div class="stat-line"><span>OPTICS</span><strong>Reflex Dot</strong></div>
+          </div>
+          <button class="select-weapon-btn">EQUIP LOADOUT</button>
+        </div>
+
+        <!-- Shotgun Card -->
+        <div class="weapon-card" data-weapon="shotgun">
+          <div class="weapon-icon">💥</div>
+          <h3>BREACH-12</h3>
+          <p class="weapon-desc">Heavy pump-action tactical shotgun delivering brutal close-range 8-pellet buckshot spreads.</p>
+          <div class="stat-group">
+            <div class="stat-line"><span>DAMAGE</span><strong>14 x 8 (112 Max)</strong></div>
+            <div class="stat-line"><span>FIRE RATE</span><strong>90 RPM</strong></div>
+            <div class="stat-line"><span>OPTICS</span><strong>Iron Bead</strong></div>
+          </div>
+          <button class="select-weapon-btn">EQUIP LOADOUT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-panel" class="hidden modal-overlay">
+    <div class="glass-modal settings-modal">
+      <div class="modal-header">
+        <h2>AUDIO & SYSTEM SETTINGS</h2>
+        <button class="modal-close" id="close-settings">✕</button>
+      </div>
+
+      <div class="settings-body">
+        <section class="settings-group">
+          <h3>PROCEDURAL 3D WEB AUDIO</h3>
+          <div class="control-row">
+            <label>Master Volume</label>
+            <input type="range" min="0" max="100" value="85" id="volume-master">
+            <span id="volume-master-val">85%</span>
+          </div>
+          <div class="control-row">
+            <label>Sound Effects (SFX)</label>
+            <input type="range" min="0" max="100" value="100" id="volume-sfx">
+            <span id="volume-sfx-val">100%</span>
+          </div>
+          <div class="audio-test-row">
+            <button class="test-sound-btn" id="btn-test-sniper">Test Sniper Sound</button>
+            <button class="test-sound-btn" id="btn-test-headshot">Test Headshot Bell</button>
+            <button class="test-sound-btn" id="btn-test-hitmarker">Test Hitmarker</button>
+          </div>
+        </section>
+
+        <section class="settings-group">
+          <h3>TACTICAL CONTROLS & DISPLAY</h3>
+          <div class="control-row">
+            <label>Mouse Sensitivity</label>
+            <input type="range" min="1" max="20" value="6" id="sensitivity-slider">
+            <span id="sensitivity-val">6</span>
+          </div>
+          <div class="control-row">
+            <label>Operative Codename</label>
+            <input type="text" id="player-name-input" value="Operative_01" maxlength="16" class="text-input">
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-Game Combat HUD -->
+  <div id="game-hud" class="hidden">
+    <!-- Top Match Header -->
+    <div class="hud-top">
+      <div class="match-time-pill" id="match-timer">10:00</div>
+      <div class="match-title-pill">VELOCITY ARENA</div>
+    </div>
+
+    <!-- Kill Feed -->
+    <div class="kill-feed" id="kill-feed"></div>
+
+    <!-- Center Reticle / Crosshair -->
+    <div class="crosshair-wrapper" id="crosshair">
+      <div class="reticle-line top"></div>
+      <div class="reticle-line bottom"></div>
+      <div class="reticle-line left"></div>
+      <div class="reticle-line right"></div>
+      <div class="reticle-center"></div>
+    </div>
+
+    <!-- Hitmarker overlay -->
+    <div class="hit-indicator hidden" id="hit-marker">
+      <div class="hit-diag d1"></div>
+      <div class="hit-diag d2"></div>
+    </div>
+
+    <!-- Sniper Steady Breath / Bolt Cycle Prompt -->
+    <div class="sniper-tactical-prompt hidden" id="sniper-prompt">
+      <span class="prompt-key">HOLD SHIFT</span> STEADY BREATH
+    </div>
+
+    <div class="bolt-cycle-indicator hidden" id="bolt-cycle-hud">
+      <div class="bolt-cycle-bar"></div>
+      <span>RECHAMBERING BOLT...</span>
+    </div>
+
+    <!-- Bottom Left: Health & Armor -->
+    <div class="hud-bottom-left">
+      <div class="stat-pill health-pill">
+        <div class="stat-icon">✚</div>
+        <div class="stat-bar-outer">
+          <div class="stat-bar-fill" id="health-bar" style="width: 100%"></div>
+        </div>
+        <span class="stat-numeric" id="health-text">100</span>
+      </div>
+      <div class="stat-pill armor-pill">
+        <div class="stat-icon">🛡</div>
+        <div class="stat-bar-outer">
+          <div class="stat-bar-fill" id="armor-bar" style="width: 100%"></div>
+        </div>
+        <span class="stat-numeric" id="armor-text">100</span>
+      </div>
+    </div>
+
+    <!-- Bottom Right: Ammo & Weapon Card -->
+    <div class="hud-bottom-right">
+      <div class="weapon-hud-card">
+        <div class="weapon-name-display" id="hud-weapon-name">APEX RAIL-SNIPER</div>
+        <div class="ammo-counter">
+          <span class="ammo-now" id="ammo-current">5</span>
+          <span class="ammo-slash">/</span>
+          <span class="ammo-max" id="ammo-reserve">25</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimap Radar -->
+    <div class="minimap-panel">
+      <canvas id="minimap-canvas" width="160" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- Dual-Mode Spectator Engine HUD Overlay -->
+  <div id="spectator-overlay" class="hidden">
+    <div class="spectator-top-bar">
+      <div class="spectator-brand">
+        <span class="live-dot">●</span>
+        <span>SPECTATOR ENGINE</span>
+      </div>
+      <div class="spectator-mode-tag" id="spectator-mode-badge">FOLLOW POV CAM</div>
+      <div class="spectator-alive-tag" id="spectator-alive-count">1 Alive</div>
+    </div>
+
+    <div class="spectator-target-card" id="spectator-target-card">
+      <div class="spectating-label">SPECTATING COMBATANT</div>
+      <div class="target-name" id="spectator-target-name">Soldier_Alpha</div>
+      <div class="target-hp" id="spectator-target-hp">HP: 100</div>
+    </div>
+
+    <div class="spectator-control-pill">
+      <span class="pill-cmd"><strong>[LMB / RMB]</strong> Cycle Players</span>
+      <span class="pill-divider">•</span>
+      <span class="pill-cmd"><strong>[F]</strong> Drone Flycam</span>
+      <span class="pill-divider">•</span>
+      <span class="pill-cmd"><strong>[R]</strong> Respawn Now</span>
+    </div>
+  </div>
+
+  <!-- Scoreboard (Tab) -->
+  <div id="scoreboard" class="hidden modal-overlay">
+    <div class="glass-modal score-modal">
+      <div class="score-header">
+        <h2>VELOCITY ARENA LEADERBOARD</h2>
+      </div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>RANK</th>
+            <th>OPERATIVE</th>
+            <th>KILLS</th>
+            <th>DEATHS</th>
+            <th>HEADSHOTS</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody id="scoreboard-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

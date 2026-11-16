@@ -1,0 +1,36 @@
+{
+  "name": "velocity-arena",
+  "version": "1.0.0",
+  "description": "Next-Generation Browser-Based 3D Multiplayer Tactical FPS with Precision Sniper, Dual-Mode Spectator & Procedural 3D Audio",
+  "main": "server.js",
+  "scripts": {
+    "dev": "vite",
+    "server": "node server.js",
+    "start": "node server.js",
+    "build": "vite build"
+  },
+  "keywords": [
+    "threejs",
+    "webgl",
+    "fps",
+    "multiplayer",
+    "socketio",
+    "webaudio",
+    "bvh"
+  ],
+  "author": "kamalesh404",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "three": "^0.184.0",
+    "three-mesh-bvh": "^0.9.9"
+  },
+  "overrides": {
+    "socket.io-parser": "4.2.7"
+  }
+}
