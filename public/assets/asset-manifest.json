@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "policy": "Only ship assets with verified commercial-use rights.",
+  "active": [
+    {
+      "file": "/models/map2.glb",
+      "role": "arena-environment",
+      "status": "existing-local-asset",
+      "license": "unverified",
+      "note": "Keep the procedural fallback enabled until provenance and redistribution rights are confirmed."
+    }
+  ],
+  "approved_sources_to_evaluate": [
+    {
+      "name": "Poly Haven",
+      "url": "https://polyhaven.com/",
+      "license": "CC0",
+      "best_for": ["photorealistic environments", "PBR materials", "HDRIs"]
+    },
+    {
+      "name": "Kenney",
+      "url": "https://kenney.nl/assets",
+      "license": "CC0",
+      "best_for": ["game-ready modular props", "weapons", "environment kits"]
+    },
+    {
+      "name": "Quaternius",
+      "url": "https://quaternius.com/",
+      "license": "CC0",
+      "best_for": ["characters", "props", "modular environments"]
+    }
+  ]
+}

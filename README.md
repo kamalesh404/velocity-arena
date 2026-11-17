@@ -99,6 +99,8 @@ npm run dev
 ```
 velocity-arena/
 ├── public/
+│   ├── assets/
+│   │   └── asset-manifest.json # Asset provenance and approved source registry
 │   └── models/               # 3D arena & character meshes (.glb)
 ├── src/
 │   ├── audio/
@@ -115,6 +117,10 @@ velocity-arena/
 ├── package.json              # Project dependencies & scripts
 └── vite.config.js            # Vite build configuration
 ```
+
+### Asset policy
+
+The client loads imported GLB environments through `GLTFLoader`, with a procedural arena fallback if an asset is missing or invalid. New downloadable assets must have verified redistribution rights before shipping; preferred sources are CC0 libraries such as Poly Haven, Kenney, and Quaternius. See `public/assets/asset-manifest.json` for the current registry.
 
 ---
 

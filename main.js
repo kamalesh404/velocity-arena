@@ -147,6 +147,11 @@ weaponGroup.position.copy(currentWeapon.basePos);
 
 let loadedWeaponMeshes = {};
 const gltfLoader = new GLTFLoader();
+const ARENA_ASSET = {
+    path: '/models/map2.glb',
+    name: 'Imported GLB Arena',
+    maxDimension: 96
+};
 
 function buildProceduralWeapon(type) {
     const group = new THREE.Group();
@@ -224,7 +229,62 @@ function equipWeapon(weaponId) {
 // ==========================================
 let mapCollider = null;
 
-function buildArena() {
+function buildMapCollider(root) {
+    const geometries = [];
+    root.updateMatrixWorld(true);
+    root.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+            const sourceGeometry = child.geometry.index ? child.geometry.toNonIndexed() : child.geometry;
+            const position = sourceGeometry.getAttribute('position');
+            if (!position) return;
+            const cloned = new THREE.BufferGeometry();
+            cloned.setAttribute('position', position.clone());
+            cloned.applyMatrix4(child.matrixWorld);
+            geometries.push(cloned);
+            if (sourceGeometry !== child.geometry) sourceGeometry.dispose();
+        }
+    });
+
+    if (geometries.length === 0) return;
+
+    const merged = BufferGeometryUtils.mergeGeometries(geometries, false);
+    merged.computeBoundsTree();
+    mapCollider = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ visible: false }));
+    scene.add(mapCollider);
+}
+
+function prepareArenaAsset(root) {
+    const bounds = new THREE.Box3().setFromObject(root);
+    const size = bounds.getSize(new THREE.Vector3());
+    const largestDimension = Math.max(size.x, size.y, size.z);
+    if (!Number.isFinite(largestDimension) || largestDimension <= 0) {
+        throw new Error(`Arena asset "${ARENA_ASSET.path}" has invalid bounds`);
+    }
+
+    const scale = ARENA_ASSET.maxDimension / largestDimension;
+    root.scale.setScalar(scale);
+    root.updateMatrixWorld(true);
+
+    const scaledBounds = new THREE.Box3().setFromObject(root);
+    const center = scaledBounds.getCenter(new THREE.Vector3());
+    root.position.x -= center.x;
+    root.position.z -= center.z;
+    root.position.y -= scaledBounds.min.y;
+
+    root.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = true;
+        child.receiveShadow = true;
+        if (child.material) {
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach((material) => {
+                material.needsUpdate = true;
+            });
+        }
+    });
+}
+
+function buildProceduralArena() {
     const arenaGroup = new THREE.Group();
 
     // Floor
@@ -268,21 +328,24 @@ function buildArena() {
 
     scene.add(arenaGroup);
 
-    // Build Static BVH Collider for fast, exact hit/movement detection
-    const geometries = [];
-    arenaGroup.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-            const cloned = child.geometry.clone();
-            cloned.applyMatrix4(child.matrixWorld);
-            geometries.push(cloned);
-        }
-    });
+    buildMapCollider(arenaGroup);
+}
 
-    if (geometries.length > 0) {
-        const merged = BufferGeometryUtils.mergeGeometries(geometries, false);
-        merged.computeBoundsTree();
-        mapCollider = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ visible: false }));
-        scene.add(mapCollider);
+async function buildArena() {
+    const loaderText = document.getElementById('loader-text');
+    if (loaderText) loaderText.textContent = `Loading ${ARENA_ASSET.name}...`;
+
+    try {
+        const gltf = await gltfLoader.loadAsync(ARENA_ASSET.path);
+        const importedArena = gltf.scene;
+        prepareArenaAsset(importedArena);
+        scene.add(importedArena);
+        buildMapCollider(importedArena);
+        if (loaderText) loaderText.textContent = 'Imported GLB arena ready';
+    } catch (error) {
+        console.error(`[Velocity Arena] Failed to load ${ARENA_ASSET.path}`, error);
+        buildProceduralArena();
+        if (loaderText) loaderText.textContent = 'Using procedural fallback arena';
     }
 }
 
